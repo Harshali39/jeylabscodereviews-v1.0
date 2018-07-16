@@ -1,0 +1,256 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Shape Drawer</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
+</head>
+<body>
+
+
+	<div class="container-contact100">
+        <div class="wrap-contact100">
+            <form class="contact100-form validate-form">
+                <span class="contact100-form-title">
+                    Hello!
+                </span>
+
+                <div class="wrap-input100 validate-input" data-validate="Name is required">
+                    <span class="label-input100">Query</span>
+                    <input class="input100 query" id="query" type="text" name="name" placeholder="Type your query">
+                    <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 input100-select">
+                    <span class="label-input100">Examples</span>
+                    <div>
+                        <select class="selection-2" name="service">
+                            <option>Choose From Examples</option>
+                            <option>Draw a circle with a radius of 50</option>
+                            <option>Draw an oval a radius of 50</option>
+                            <option>Draw a square with a side length of 60  </option>
+                            <option>Draw a rectangle with a width of 25 and a height of 40</option>
+                            <option>Draw an octagon with a side length of 8  </option>
+                            <option>Draw an pentagon with a side length of 5  </option>
+                            <option>Draw an heptagon with a side length of 7  </option>
+                            <option>Draw an hexagon with a side length of 6  </option>
+                            <option>Draw an isosceles triangle with a height of 20 and a width of 10</option>
+                            <option>Draw an equilateral with a side length of 80</option>
+                        </select>
+                    </div>
+                    <span class="focus-input100"></span>
+                </div>
+
+                <div class="wrap-input100 validate-input">
+                    <span class="label-input100">Result</span>
+                    <canvas id="myCanvas" width="500" height="400">Your browser does not support the HTML5 canvas tag.</canvas>
+                    <span class="focus-input100"></span>
+
+                </div>
+                <div class="container-contact100-form-btn">
+                    <div class="wrap-contact100-form-btn">
+                        <div class="contact100-form-bgbtn"></div>
+                        <button class="contact100-form-btn" onclick="Submit()">
+                            <span>
+                                Submit
+                                <i class="fa fa-long-arrow-right m-l-7" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                
+                    <div class="container-contact100-form-btn">
+                        <div class="wrap-contact100-form-btn">
+                            <div class="contact100-form-bgbtn"></div>
+                            <button class="contact100-form-btn" onclick="Clear()">
+                                <span>
+                                    Clear
+                               </span>
+                            </button>
+                        </div>
+                    </div>
+</form>
+            
+        </div>
+	</div>
+
+
+
+	<div id="dropDownSelect1"></div>
+
+<!--===============================================================================================-->
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+	<script>
+		$(".selection-2").select2({
+			minimumResultsForSearch: 20,
+			dropdownParent: $('#dropDownSelect1')
+		});
+		
+		$("select").change(function() {
+		
+		
+ var str = "";
+    $( "select option:selected" ).each(function() {
+      str += $( this ).text() + " ";
+    });
+	$(".query").val(str);
+});
+
+
+//$("button").click(function(event){
+ function Submit()
+  {
+   Clear();
+   event.preventDefault();
+   $.ajax({
+    url: "http://localhost:62517/Home/Process",
+    type: "get", //send it through get method
+    data: {
+            query: $(".query").val()
+          },
+          success: function (response) {
+           $(".result").val(response);
+           var obj = JSON.parse(response);
+           var c = document.getElementById("myCanvas");
+           var ctx = c.getContext("2d");
+                    
+              ctx.beginPath();
+
+              //draw circle
+           if (obj.ShapeName == "circle") {
+               var r = obj.Radius;
+               ctx.arc(200, 200, r, 0, 2 * Math.PI);
+               ctx.fillStyle = 'red';
+               ctx.fill();
+           }
+
+              //draw oval
+           else if (obj.ShapeName == "oval") {
+               var r = obj.Radius;
+               ctx.ellipse(200, 200, r, 90, 180 * Math.PI / 180, 0, 2 * Math.PI);
+               ctx.fillStyle = 'green';
+               ctx.fill();
+           }
+
+               //draw square
+           else if (obj.ShapeName == "square") {
+                var l = obj.Length;
+               ctx.rect(200, 200, l, l);
+               ctx.fillStyle = 'blue';
+               ctx.fill();
+           }
+
+               //draw rectangle
+           else if (obj.ShapeName == "rectangle") {
+                 var h = obj.Height;
+                 var w = obj.Width;
+               ctx.rect(200, 200, h, w);
+               ctx.fillStyle = 'yellow';
+               ctx.fill();
+           }
+               
+               //drawing polygons with number of sides as input
+           else if (obj.ShapeName == "octagon" || obj.ShapeName == "pentagon" || obj.ShapeName == "hexagon" || obj.ShapeName == "heptagon") {
+               var sides = obj.Length;
+               polygon(ctx, 120, 120, 100, sides, -Math.PI / 2);
+               ctx.fillStyle = 'blue';
+               ctx.fill();
+
+           }
+
+           //draw equilateral triangle    
+           else if (obj.ShapeName == "equilateral") {
+               var ab = obj.Length;
+               ab = ab * (Math.sqrt(3) / 2);
+               var X = c.width / 2;
+               var Y = c.height / 2;
+               ctx.moveTo(X, Y);
+               ctx.lineTo(X + 50, Y + ab);
+               ctx.lineTo(X - 50, Y + ab);
+               ctx.lineTo(X, Y);
+               ctx.fillStyle = 'pink';
+               ctx.fill();
+           
+           }
+              ctx.stroke();
+              ctx.closePath();
+    },
+          error: function (xhr) {
+                    alert("Error");
+          }
+    });
+        }
+        //function to draw polygons
+function polygon(ctx, x, y, radius, sides, startAngle, anticlockwise) {
+            if (sides < 3) return;
+            var a = (Math.PI * 2) / sides;
+            a = anticlockwise ? -a : a;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(startAngle);
+            ctx.moveTo(radius, 0);
+            for (var i = 1; i < sides; i++) {
+                ctx.lineTo(radius * Math.cos(a * i), radius * Math.sin(a * i));
+            }
+            ctx.closePath();
+            ctx.restore();
+}
+        //function for clearing canvas
+function Clear() {
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+            ctx.clearRect(0, 0,600,600);
+}
+        //dropdown list
+function populateTextField() {
+    var x = document.getElementById("fname");
+    x.value = x.value.toUpperCase();
+}
+	
+	</script>
+<!--===============================================================================================-->
+	<script src="vendor/daterangepicker/moment.min.js"></script>
+	<script src="vendor/daterangepicker/daterangepicker.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/countdowntime/countdowntime.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-23581568-13"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-23581568-13');
+</script>
+    <script> </script>
+</body>
+</html>
